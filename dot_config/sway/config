@@ -16,7 +16,7 @@ set $menu rofi -show drun
 
 ### Output configuration
 # Background
-output * bg /home/zantox/Pictures/1684005483836809.jpg fill
+output * bg ~/.config/sway/1684005483836809.jpg fill
 # Font
 font pango:monospace 10
 # Status bar

@@ -1,0 +1,32 @@
+{{ $packages := list
+	"alacritty"
+	"base"
+	"base-devel"
+	"chezmoi"
+	"discord"
+	"firefox"
+	"git"
+	"gnome-keyring"
+	"greetd"
+	"neovim"
+	"openssh"
+	"protonmail-bridge"
+	"ranger"
+	"rofi"
+	"sudo"
+	"sway"
+	"swaybg"
+	"thunderbird"
+	"ttf-jetbrains-mono"
+	"vim"
+	"waybar"
+	"wl-clipboard"
+	"zathura"
+	"zsh" -}}
+
+#!/bin/bash
+
+set -euo pipefail
+
+sudo pacman -Syu
+sudo pacman -S --needed - < {{ $packages | join " " }}
