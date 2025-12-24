@@ -1,0 +1,26 @@
+{
+  "layer": "top",
+  "position": "bottom",
+
+  "modules-left": [
+    "sway/workspaces"
+  ],
+  "modules-right": [
+    "sway/language", "network", "battery", "clock"
+  ],
+
+  "sway/workspaces": {
+    "disable-scroll": true,
+    "format": "{name}"
+  },
+
+  "sway/language": {
+    "format": "{short}", // "us", "no", etc.
+    "tooltip": true
+  },
+
+  "clock": {
+    "format": "{:%Y-%m-%d %H:%M:%S}",
+    "tooltip-format": "{:%A, %d %B %Y}"
+  }
+}

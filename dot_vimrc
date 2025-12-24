@@ -1,0 +1,374 @@
+"                              ...vvvv)))))).
+"   /~~\               ,,,c(((((((((((((((((/
+"  /~~c \.         .vv)))))))))))))))))))\``
+"      G_G__   ,,(((KKKK//////////////'
+"    ,Z~__ '@,gW@@AKXX~MW,gmmmz==m_.
+"   iP,dW@!,A@@@@@@@@@@@@@@@A` ,W@@A\c
+"   ]b_.__zf !P~@@@@@*P~b.~+=m@@@*~ g@Ws.
+"      ~`    ,2W2m. '\[ ['~~c'M7 _gW@@A`'s
+"        v=XX)====Y-  [ [    \c/*@@@*~ g@@i
+"       /v~           !.!.     '\c7+sg@@@@@s.
+"      //              'c'c       '\c7*X7~~~~
+"     ]/                 ~=Xm_       '~=(Gm_.
+
+" vim-plug ------------------------------------- {{{
+" Install vim-plug if not already installed
+if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+  silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" FZF
+
+call plug#begin()
+Plug 'chriskempson/base16-vim'                  " Base16 colorscheme
+Plug 'unblevable/quick-scope'                   " [fFtT] highlighting
+Plug 'conradirwin/vim-bracketed-paste'          " Set pate on pasting
+Plug 'tpope/vim-fugitive'                       " Git
+Plug 'junegunn/goyo.vim'                        " Clean writing space
+Plug 'godlygeek/tabular'                        " Alignment
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'                         " FZF
+Plug 'kshenoy/vim-signature'                    " Show marks
+Plug 'machakann/vim-sandwich'                   " Surround
+Plug 'kana/vim-textobj-user'                    " Create custom text objects
+Plug 'kana/vim-textobj-line'                    " Operator for selecting line
+Plug 'sgur/vim-textobj-parameter'               " Operator for parameters
+Plug 'tpope/vim-repeat'                         " Repeatable macro actions
+Plug 'tpope/vim-vinegar'                        " Easy Explorer access
+Plug 'lervag/vimtex'                            " LaTeX
+
+" Python plugins
+Plug 'Vimjas/vim-python-pep8-indent'            " PEP8 indentation
+Plug 'preservim/nerdcommenter'                  " Commenting
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " Code completion
+call plug#end()
+" }}}
+
+" Aesthetics ----------------------------------- {{{
+set termguicolors
+set number
+set relativenumber
+set nowrap
+syntax on
+set scrolloff=3
+source ~/.config/nvim/colorscheme.vim
+highlight Comment cterm=italic
+highlight Comment gui=italic
+
+set smartcase
+set ignorecase
+
+" Quick-scope highlighting
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+" Set transparent background
+"hi Normal guibg=NONE ctermbg=NONE
+function! s:base16_customize() abort
+    " Base16hi(highlight-group, guifg, guibg, ctermfg, ctermbg, (italics, bold, etc), idk)
+    call Base16hi("CocErrorSign"  ,g:base16_gui05,g:base16_gui01,g:base16_cterm03,g:base16_cterm01,"","")
+    call Base16hi("CocWarningSign",g:base16_gui05,g:base16_gui01,g:base16_cterm03,g:base16_cterm01,"","")
+    call Base16hi("CocInfoSign"   ,g:base16_gui05,g:base16_gui01,g:base16_cterm03,g:base16_cterm01,"","")
+    call Base16hi("CocHintSign"   ,g:base16_gui05,g:base16_gui01,g:base16_cterm03,g:base16_cterm01,"","")
+endfunction
+
+augroup on_change_colorschema
+    autocmd!
+    autocmd ColorScheme * call s:base16_customize()
+    "autocmd ColorScheme * hi! normal guibg=none ctermbg=none
+augroup END
+
+let t:is_transparent = 0
+function! Toggle_transparent()
+    if t:is_transparent == 0
+        hi Normal guibg=NONE ctermbg=NONE
+        let t:is_transparent = 1
+    else
+        set background=dark
+        let t:is_transparent = 0
+    endif
+endfunction
+" }}}
+
+" Netrw ---------------------------------------- {{{
+" Set netrw settings
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro rnu scl=no'
+
+" Hide current directory and previous from netrw explore
+let g:netrw_list_hide = '^\.\+\/$'
+
+" Hide netrw banner
+let g:netrw_banner = 0
+" }}}
+
+" Abbreviations -------------------------------- {{{
+" Machine Learning abbreviations
+iabbrev nn neural network
+iabbrev rl reinforcement learning
+" }}}
+
+" Remaps --------------------------------------- {{{
+let mapleader = ' '
+let maplocalleader = ' m'
+
+" [E]dit [V]imrc
+nnoremap <Leader>ev :split $HOME/.vimrc<CR>
+nnoremap <Leader>es :source $MYVIMRC<CR>
+
+" Toggle between transparent and opaque background
+nnoremap <Leader>et :call Toggle_transparent()<CR>
+
+" Open close fold (I have caps lock mapped to F2)
+nnoremap <F2> za
+
+" Default very magic on searching
+nnoremap / /\v
+nnoremap ? ?\v
+vnoremap / /\v
+vnoremap ? ?\v
+
+" make substitution repeat to reuse last flags
+nnoremap & :&&<cr>
+xnoremap & :&&<cr>
+
+" Ctrl_L redraws screen, and does :nohlsearch
+nnoremap <silent> <C-l> <C-l>:nohlsearch<CR>
+
+" Navigate buffer list
+nnoremap <silent> [b :bprevious<CR>
+nnoremap <silent> ]b :bnext<CR>
+nnoremap <silent> [B :bfirst<CR>
+nnoremap <silent> ]B :blast<CR>
+
+" Open netrw [E]xplorer [L]eft
+nnoremap <silent> <Leader>el :Lexplore<CR>
+
+" Open netrw [E]xplorer in directory of [C]rrent file 
+nnoremap <silent> <Leader>ec :execute "Lexplore " . expand("%:p:h")<CR>
+
+" Open FZF File search
+nnoremap <silent> <Leader>ef :Files ~<CR>
+
+" Open FZF Buffer search
+nnoremap <silent> <Leader>eb :Buffers<CR>
+
+" Open FZF Git File search
+nnoremap <silent> <Leader>eg :GFiles<CR>
+
+" Termdebug
+packadd termdebug
+nnoremap <Leader>dn :Over<CR>
+nnoremap <Leader>ds :Step<CR>
+nnoremap <Leader>df :Finish<CR>
+nnoremap <Leader>dc :Continue<CR>
+nnoremap <Leader>de :Evaluate<CR>
+
+" Terminal
+" Make CTRL-R act like in normal-mode
+tnoremap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+
+" [count] o/O remap {{{
+" o/O                   Start insert mode with [count] blank lines.
+"                       The default behavior repeats the insertion [count]
+"                       times, which is not so useful.
+function! s:NewLineInsertExpr( isUndoCount, command )
+    if ! v:count
+        return a:command
+    endif
+
+    let l:reverse = { 'o': 'O', 'O' : 'o' }
+    " First insert a temporary '$' marker at the next line (which is necessary
+    " to keep the indent from the current line), then insert <count> empty lines
+    " in between. Finally, go back to the previously inserted temporary '$' and
+    " enter insert mode by substituting this character.
+    " Note: <C-\><C-n> prevents a move back into insert mode when triggered via
+    " |i_CTRL-O|.
+    return (a:isUndoCount && v:count ? "\<C-\>\<C-N>" : '') .
+    \   a:command . "$\<Esc>m`" .
+    \   v:count . l:reverse[a:command] . "\<Esc>" .
+    \   'g``"_s'
+endfunction
+nnoremap <silent> <expr> o <SID>NewLineInsertExpr(1, 'o')
+nnoremap <silent> <expr> O <SID>NewLineInsertExpr(1, 'O')
+" }}}
+" }}}
+
+" coc.nvim ------------------------------------- {{{
+
+" Disable coc on certain filetypes
+autocmd BufNew,BufEnter *.json,*.vim,*.lua execute "silent! CocDisable"
+autocmd BufLeave *.json,*.vim,*.lua execute "silent! CocEnable"
+
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[c` and `]c` to navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  :call CocActionAsync('format')<CR>
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+" }}}
+
+" Vimtex --------------------------------------- {{{
+let g:vimtex_compiler_method = 'tectonic'
+let g:vimtex_view_method = 'zathura'
+" }}}
+
+" Operators ------------------------------------ {{{
+onoremap anb :<C-U>normal! f(vab<CR>
+onoremap inb :<C-U>normal! f(vib<CR>
+onoremap alb :<C-U>normal! F)vab<CR>
+onoremap ilb :<C-U>normal! F)vib<CR>
+
+onoremap anB :<C-U>normal! f{vaB<CR>
+onoremap inB :<C-U>normal! f{viB<CR>
+onoremap alB :<C-U>normal! F}vaB<CR>
+onoremap ilB :<C-U>normal! F}viB<CR>
+" }}}
+
+" Automatic filetype commands -------------------{{{
+" Vimscript file settings ---------------------- {{{
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim call SetVimOptions()
+augroup END
+function! SetVimOptions()
+    setlocal foldmethod=marker
+    setlocal foldlevelstart=0
+    setlocal expandtab
+    setlocal smarttab
+    setlocal softtabstop=4
+    setlocal shiftwidth=4
+endfunction
+" }}}
+
+" Python file settings ------------------------- {{{
+augroup filetype_python
+    autocmd!
+    autocmd FileType python call SetPythonOptions()
+    autocmd FileType python nnoremap <buffer> <LocalLeader>r :w <Bar> make<CR>
+augroup END
+function! SetPythonOptions()
+    setlocal shiftwidth=4 
+    setlocal softtabstop=4 
+    setlocal expandtab 
+    setlocal smarttab
+    setlocal foldmethod=indent
+    setlocal colorcolumn=80
+    setlocal makeprg=python3\ %
+    setlocal errorformat=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+endfunction
+" }}}
+
+" Tex file settings ---------------------------- {{{
+augroup filetype_tex
+    autocmd!
+    autocmd FileType tex setlocal number rnu
+    autocmd FileType tex setlocal wrap tw=80
+    autocmd FileType tex setlocal spell spelllang=en_gb
+    autocmd FileType tex setlocal sts=2 ts=2 sw=2
+    autocmd FileType tex nnoremap <buffer> <LocalLeader>c I% <Esc>
+    autocmd FileType tex nnoremap <buffer> <LocalLeader>a }kA
+augroup END
+" }}}
+
+" YAML file settings --------------------------- {{{
+augroup filetype_yaml
+    autocmd!
+    autocmd FileType yaml setlocal shiftwidth=2 softtabstop=2 expandtab smarttab
+augroup END
+" }}}
+" }}}
