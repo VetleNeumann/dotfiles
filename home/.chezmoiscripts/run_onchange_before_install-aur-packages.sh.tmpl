@@ -6,9 +6,10 @@
 set -euo pipefail
 
 sudo pacman -S --needed base-devel
-cd tmp
+temp_directory="$(mktemp -d)"
+cd "$temp_directory"
 git clone https://aur.archlinux.org/paru.git
-cd paru
+cd "paru"
 makepkg -si
 
 paru -S --needed - < {{ $packages | join " " }}
