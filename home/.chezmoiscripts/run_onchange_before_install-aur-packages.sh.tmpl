@@ -1,0 +1,19 @@
+{{ if false -}}
+{{ $packages := list
+	"paru" -}}
+
+#!/bin/bash
+
+set -euo pipefail
+
+if [ ! "$(command -v paru)" ]; then
+	sudo pacman -S --needed base-devel
+	temp_directory="$(mktemp -d)"
+	cd "${temp_directory}"
+	git clone https://aur.archlinux.org/paru.git
+	cd paru
+	makepkg -si
+fi
+
+sudo paru -S --needed {{ $packages | join " " }}
+{{ end -}}
