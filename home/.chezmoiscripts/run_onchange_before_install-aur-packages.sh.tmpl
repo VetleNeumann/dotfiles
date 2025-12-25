@@ -1,4 +1,4 @@
-{{ if false -}}
+{{ if eq .osid "linux-arch" -}}
 {{ $packages := list
 	"paru" -}}
 
@@ -16,4 +16,5 @@ if [ ! "$(command -v paru)" ]; then
 fi
 
 sudo paru -S --needed {{ $packages | join " " }}
+
 {{ end -}}
