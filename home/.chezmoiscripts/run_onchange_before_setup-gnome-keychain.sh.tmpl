@@ -5,11 +5,11 @@ set -euo pipefail
 sudo pacman -S --needed gnome-keyring greetd
 sudo systemctl enable --now greetd.service
 
+# add gnome-keychan to PAM
 PAM_FILE="/etc/pam.d/greetd"
-
-if [ ! grep -q 'pam_gnome_keyring\.so' /etc/pam.d/greetd ]; then
-  sudo sed -i '$a\
+if ! grep -q 'pam_gnome_keyring\.so' "$PAM_FILE"; then
+    sudo sed -i '$a\
 auth       optional     pam_gnome_keyring.so\
 session    optional     pam_gnome_keyring.so auto_start' \
-  /etc/pam.d/greetd
+    "$PAM_FILE"
 fi
