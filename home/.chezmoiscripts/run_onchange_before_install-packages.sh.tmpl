@@ -29,4 +29,4 @@
 set -euo pipefail
 
 sudo pacman -Syu
-sudo pacman -S --needed - < {{ $packages | join " " }}
+sudo pacman -S --needed {{ $packages | join " " }}
