@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -euo pipefail
+
+sudo pacman -S --needed gnome-keyring greetd
+sudo systemctl enable --now greetd.service
+
+PAM_FILE="/etc/pam.d/greetd"
+
+# If pam_gnome_keyring is already present, do nothing
+if grep -q 'pam_gnome_keyring\.so' "$PAM_FILE"; then
+  exit 0
+fi
+
+# Append required lines
+cat >> "$PAM_FILE" <<'EOF'
+auth       optional     pam_gnome_keyring.so
+session    optional     pam_gnome_keyring.so auto_start
+EOF
