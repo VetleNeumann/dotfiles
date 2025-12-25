@@ -371,4 +371,12 @@ augroup filetype_yaml
     autocmd FileType yaml setlocal shiftwidth=2 softtabstop=2 expandtab smarttab
 augroup END
 " }}}
+
+" Template file settings --------------------------- {{{
+augroup filetype_template
+    autocmd!
+    autocmd FileType template setlocal shiftwidth=4 softtabstop=4 expandtab smarttab
+    autocmd FileType template setlocal filetype=bash
+augroup END
+" }}}
 " }}}
