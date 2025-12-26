@@ -1,31 +1,25 @@
 {{ if eq .osid "linux-arch" -}}
 
 {{ $packages := list
-	"alacritty"
 	"base"
 	"base-devel"
 	"chezmoi"
 	"discord"
 	"firefox"
 	"git"
-	"gnome-keyring"
-	"greetd"
 	"neovim"
 	"nodejs"
 	"openssh"
 	"protonmail-bridge"
 	"ranger"
-	"rofi"
-	"sudo"
-	"sway"
-	"swaybg"
 	"thunderbird"
 	"ttf-jetbrains-mono"
 	"vim"
-	"waybar"
-	"wl-clipboard"
 	"zathura"
 	"zsh" -}}
+
+{{/* sway */ -}}
+{{ $packages = concat $packages (list "rofi" "sway" "swaybg" "waybar" "wl-clipboard" "foot") -}}
 
 #!/bin/bash
 
