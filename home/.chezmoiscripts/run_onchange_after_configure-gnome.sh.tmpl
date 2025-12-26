@@ -7,10 +7,17 @@ set -euo pipefail
 fc-cache -f
 
 gsettings set org.gnome.shell favorite-apps "[ \
-{{ if lookPath "firefox" -}}
-        'firefox.desktop', \
+{{ if (and (lookPath "flatpak") (exec "flatpak" "info" "com.discordapp.Discord")) -}}
+        'com.discordapp.Discord.desktop',
 {{ end -}}
-        'org.gnome.Nautilus.desktop' \
+{{ if lookPath "thunderbird" -}}
+        'net.thunderbird.Thunderbird.desktop', \
+{{ end -}}
+{{ if lookPath "firefox" -}}
+        'org.mozilla.firefox.desktop', \
+{{ end -}}
+        'org.gnome.Nautilus.desktop', \
+        'org.gnome.Ptyxis.desktop' \
 ]"
 
 {{ end -}}
