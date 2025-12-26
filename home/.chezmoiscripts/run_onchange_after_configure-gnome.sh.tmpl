@@ -1,0 +1,16 @@
+{{ if eq .osid "linux-fedora" -}}
+
+#!/bin/bash
+
+set -euo pipefail
+
+fc-cache -f
+
+gsettings set org.gnome.shell favorite-apps "[ \
+{{ if lookPath "firefox" -}}
+        'firefox.desktop', \
+{{ end -}}
+        'org.gnome.Nautilus.desktop' \
+]"
+
+{{ end -}}

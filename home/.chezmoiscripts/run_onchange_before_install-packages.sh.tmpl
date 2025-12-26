@@ -1,31 +1,52 @@
-{{ if eq .osid "linux-arch" -}}
+{{ if eq .osid "linux-arch" "linux-fedora" -}}
 
+{{ $packagesFlatpak := list -}}
 {{ $packages := list
-	"base"
-	"base-devel"
 	"chezmoi"
-	"discord"
-	"firefox"
 	"git"
 	"neovim"
 	"nodejs"
 	"openssh"
-	"protonmail-bridge"
 	"ranger"
-	"thunderbird"
-	"ttf-jetbrains-mono"
 	"vim"
-	"zathura"
 	"zsh" -}}
+{{ if eq .osid "linux-arch" -}}
+{{   $packages = mustAppend $packages "ttf-jetbrains-mono" -}}
+{{ else if eq .osid "linux-fedora" -}}
+{{   $packages = mustAppend $packages "jetbrains-mono-fonts" -}}
+{{ end -}}
+
+{{/* workstation */ -}}
+{{ $packages = concat $packages (list "firefox" "thunderbird" "zathura") -}}
+{{ if eq .osid "linux-arch" -}}
+{{   $packages = mustAppend $packages "discord" "protonmail-bridge" -}}
+{{ else if eq .osid "linux-fedora" -}}
+{{   $packagesFlatpak = concat $packagesFlatpak (list "com.discordapp.Discord" "ch.protonmail.protonmail-bridge") -}}
+{{ end -}}
 
 {{/* sway */ -}}
 {{ $packages = concat $packages (list "rofi" "sway" "swaybg" "waybar" "wl-clipboard" "foot") -}}
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
 
 #!/bin/bash
 
 set -euo pipefail
 
-sudo pacman -Syu
-sudo pacman -S --needed {{ $packages | join " " }}
+{{ if eq .osid "linux-arch" -}}
+{{ $sudo }}pacman -Syu
+{{ $sudo }}pacman -S --needed {{ $packages | join " " }}
+{{ else if eq .osid "linux-fedora" -}}
+if ! rpm -q rpmfusion-free-release &>/dev/null; then
+    {{ $sudo }}dnf install -y \
+        http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+fi
+{{ $sudo }}dnf upgrade
+{{ $sudo }}dnf install {{ $packages | join " " }}
+flatpak install flathub {{ $packagesFlatpak | join " " }}
+{{ end -}}
 
 {{ end -}}
