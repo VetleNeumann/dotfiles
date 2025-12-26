@@ -19,7 +19,7 @@
 {{/* workstation */ -}}
 {{ $packages = concat $packages (list "firefox" "thunderbird" "zathura") -}}
 {{ if eq .osid "linux-arch" -}}
-{{   $packages = mustAppend $packages "discord" "protonmail-bridge" -}}
+{{   $packages = concat $packages (list "discord" "protonmail-bridge") -}}
 {{ else if eq .osid "linux-fedora" -}}
 {{   $packagesFlatpak = concat $packagesFlatpak (list "com.discordapp.Discord" "ch.protonmail.protonmail-bridge") -}}
 {{ end -}}
