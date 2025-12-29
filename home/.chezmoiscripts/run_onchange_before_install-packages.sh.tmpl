@@ -17,7 +17,7 @@
 {{ end -}}
 
 {{/* workstation */ -}}
-{{ $packages = concat $packages (list "firefox" "thunderbird" "zathura") -}}
+{{ $packages = concat $packages (list "firefox" "homebank" "thunderbird" "zathura") -}}
 {{ if eq .osid "linux-arch" -}}
 {{   $packages = concat $packages (list "discord" "protonmail-bridge") -}}
 {{ else if eq .osid "linux-fedora" -}}
